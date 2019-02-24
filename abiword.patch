@@ -1,0 +1,52 @@
+--- src/text/ptbl/xp/pd_DocumentRDF.cpp.original	2019-02-24 04:00:07.175534629 -0500
++++ src/text/ptbl/xp/pd_DocumentRDF.cpp	2019-02-24 03:43:34.863857923 -0500
+@@ -2269,8 +2269,8 @@
+         icalcomponent_set_uid( c,         m_uid.c_str() );
+         icalcomponent_set_location( c,    m_location.c_str() );
+         icalcomponent_set_description( c, m_desc.c_str() );
+-        icalcomponent_set_dtstart( c,     icaltime_from_timet( m_dtstart, 0 ) );
+-        icalcomponent_set_dtend( c,       icaltime_from_timet( m_dtend, 0 ) );
++        icalcomponent_set_dtstart( c,     icaltime_from_timet_with_zone( m_dtstart, 0, 0 ) );
++        icalcomponent_set_dtend( c,       icaltime_from_timet_with_zone( m_dtend, 0, 0 ) );
+ 
+         char* data = icalcomponent_as_ical_string( c );
+         std::ofstream oss( filename.c_str() );
+
+--- src/af/xap/gtk/xap_UnixFrameImpl.cpp.original	2019-02-24 04:00:47.827779127 -0500
++++ src/af/xap/gtk/xap_UnixFrameImpl.cpp	2019-02-24 03:29:59.490310332 -0500
+@@ -1208,9 +1208,9 @@
+ }
+ 
+ #if GTK_CHECK_VERSION(3,0,0)
+-gint XAP_UnixFrameImpl::_fe::draw(GtkWidget * w, cairo_t * cr)
++gboolean XAP_UnixFrameImpl::_fe::draw(GtkWidget * w, cairo_t * cr)
+ #else
+-gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
++gboolean XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
+ #endif
+ {
+ 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
+@@ -1243,7 +1243,7 @@
+ 		pView->draw(&rClip);
+ #endif
+ 	}
+-	return FALSE;
++	return TRUE;
+ }
+ 
+ static bool bScrollWait = false;
+
+--- src/af/xap/gtk/xap_UnixFrameImpl.h.original	2019-02-24 04:00:58.788845020 -0500
++++ src/af/xap/gtk/xap_UnixFrameImpl.h	2019-02-24 03:33:00.390323021 -0500
+@@ -152,9 +152,9 @@
+ 			static gint key_release_event(GtkWidget* w, GdkEventKey* e);
+ 			static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
+ #if GTK_CHECK_VERSION(3,0,0)
+-			static gint draw(GtkWidget * w, cairo_t * cr);
++			static gboolean draw(GtkWidget * w, cairo_t * cr);
+ #else
+-			static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
++			static gboolean expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
+ #endif
+ 			static gint do_ZoomUpdate( gpointer /* xap_UnixFrame * */ p);
+ 			static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/);
